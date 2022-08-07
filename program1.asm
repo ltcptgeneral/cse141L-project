@@ -15,15 +15,15 @@ init: LDI #d62
 	LDW r8
 	PUT r7 // state will now be in r7
 	LDI #d0
-	PUT r11 // init read incrementor to 0
+	PUT r11 // init read incrementer to 0
 	LDI #d64
-	PUT r12 // init write incrementor to 64
+	PUT r12 // init write incrementer to 64
 	LDI #d61
 	PUT r8
 	LDW r8
-	PUT r8 // init r8 decrementor with number of preamble space chars
+	PUT r8 // init r8 decrementer with number of preamble space chars
 	LDI #d64
-	PUT r9 // init r9 decrementor to total number of possible ciphertext chars
+	PUT r9 // init r9 decrementer to total number of possible ciphertext chars
 preamble_loop: LDI #lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	LDI #d32 // get space character decimal 32
