@@ -24,12 +24,12 @@ init: LDI #d62
 	PUT r8 // init r8 decrementer with number of preamble space chars
 	LDI #d64
 	PUT r9 // init r9 decrementer to total number of possible ciphertext chars
-preamble_loop: LDI #lfsr_routine // load address for the lfsr_routine label
-	JAL r0 // jump to the lfsr_routine label
-	LDI #d32 // get space character decimal 32
-	XOR r1 // bitwise XOR the current state with plaintext space to generate ciphertext
+preamble_loop:LDI #d32 // get space character decimal 32
+	XOR r7 // bitwise XOR the current state with plaintext space to generate ciphertext
 	CLB r0 // clear the leading bit of the ciphertext as in requirements
 	STW r12 // store ciphertext to write pointer
+	LDI #lfsr_routine // load address for the lfsr_routine label
+	JAL r0 // jump to the lfsr_routine label
 	NXT r12 // increment write pointer
 	NXT r9 // decrement number of remaining ciphertext characters
 	LDI #main_loop // load the address of label main_loop
@@ -37,12 +37,12 @@ preamble_loop: LDI #lfsr_routine // load address for the lfsr_routine label
 	JEZ r0 // exit preamble loop if the preamble counter has just reached 0
 	LDI #preamble_loop // load the address of label preamble_loop
 	JMP r0 // jump to preamble_loop if there are more space characters to encode
-main_loop: LDI #lfsr_routine // load address for the lfsr_routine label
-	JAL r0 // jump to the lfsr_routine label
-	LDW r11 // load the next plaintext byte
-	XOR r1 // bitwise XOR the current state with plaintext space to generate ciphertext
+main_loop: LDW r11 // load the next plaintext byte
+	XOR r7 // bitwise XOR the current state with plaintext space to generate ciphertext
 	CLB r0 // clear the leading bit of the ciphertext as in requirements
 	STW r12 // store ciphertext to write pointer
+	LDI #lfsr_routine // load address for the lfsr_routine label
+	JAL r0 // jump to the lfsr_routine label
 	NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
 	LDI #done // load address of label done
@@ -57,7 +57,7 @@ lfsr_routine: GET r7 // get previous state
 	GET r7 // get previous state again
 	LSH #1 // left shift previous state by 1
 	ORR r1 // or with parity bit to get next state
-	PUT r1 // put next state to r1
+	PUT r7 // put next state to r7
 	GET r14 // load link register
 	JMP r0 // return to function call address
 done: LDI #b10000000 // load the processor flag state needed to halt the program
