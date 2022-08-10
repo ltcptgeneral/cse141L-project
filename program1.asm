@@ -28,34 +28,34 @@ preamble_loop: LDI #d32 // get space character decimal 32
 	XOR r7 // bitwise XOR the current state with plaintext space to generate ciphertext
 	CLB r0 // clear the leading bit of the ciphertext as in requirements
 	STW r12 // store ciphertext to write pointer
-	LDI #lfsr_routine // load address for the lfsr_routine label
+	LDI lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	NXT r12 // increment write pointer
 	NXT r9 // decrement number of remaining ciphertext characters
-	LDI #main_loop // load the address of label main_loop
+	LDI main_loop // load the address of label main_loop
 	NXT r8 // decrement preamble counter
 	JEZ r0 // exit preamble loop if the preamble counter has just reached 0
-	LDI #preamble_loop // load the address of label preamble_loop
+	LDI preamble_loop // load the address of label preamble_loop
 	JMP r0 // jump to preamble_loop if there are more space characters to encode
 main_loop: LDW r11 // load the next plaintext byte
 	XOR r7 // bitwise XOR the current state with plaintext space to generate ciphertext
 	CLB r0 // clear the leading bit of the ciphertext as in requirements
 	STW r12 // store ciphertext to write pointer
-	LDI #lfsr_routine // load address for the lfsr_routine label
+	LDI lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
-	LDI #done // load address of label done
+	LDI done // load address of label done
 	NXT r9 // decrement number of remaining ciphertext chars
 	JEZ r0 // jump to end of program if all ciphertext chars have been processed
-	LDI #main_loop // load address of main_loop
+	LDI main_loop // load address of main_loop
 	JMP r0 // jump to main_loop if there is still space for message characters
 lfsr_routine: GET r7 // get previous state
 	AND r6 // and state with taps to get feedback pattern
 	PTY r0 // get feedback parity bit
 	PUT r1 // store feedback bit to r1 temporarily
 	GET r7 // get previous state again
-	LSH #1 // left shift previous state by 1
+	LSH #d1 // left shift previous state by 1
 	ORR r1 // or with parity bit to get next state
 	PUT r7 // put next state to r7
 	GET r14 // load link register
