@@ -133,6 +133,4 @@ for file in targets:
 	for inst in tqdm(instructions, desc='Assembly', unit=' instructions'): 
 		opcode = op_codes[inst[0]]
 		operand = inst[1]
-		#print(str(opcode) + " " + str(operand))
-		#print(str(opcode | operand))
 		out.write((opcode| operand).to_bytes(length=2, byteorder='big'))
