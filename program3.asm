@@ -1,5 +1,5 @@
 // Program 2 register use map:
-// r0 is the accumulator, r1 is often used to cache temp values
+// r0 is the accumulator, r1 and r2 is often used to cache temp values
 // r5 is the TAP LUT link register
 // r6 is LFSR tap pattern
 // r7 is LFSR state value
@@ -77,11 +77,19 @@ tap_init: LDI #d64
 		JEZ r0 // if r8 (preamble counter) is zero, then all preamble have matched and current tap pattern is correct, jump to main loop
 		LDI #tap_loop
 		JMP r0 // jump to tap_loop if characters matched but preamble is not over
-main_loop: LDW r11 // load the next ciphertext byte
-	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
+main_loop: LDI #correct
+	PUT r1 // put correct handle address in r1
+	LDW r11 // load the next ciphertext byte
+	CHK r0 // check ciphertext for error
+	JEZ r1 // if no error, jump to correct, otherwise continue to error handling
+	error: LDI #x80 // load error flag character into r0
+	STW r12 // store error flag to write pointer
+	LDI #common
+	JMP r0 // jump out of error handling, to common operations after writing
+	correct: XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
 	CLB r0 // clear the leading bit of the plaintext as in requirements
 	STW r12 // store plaintext to write pointer
-	LDI #lfsr_routine // load address for the lfsr_routine label
+	common: LDI #lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
