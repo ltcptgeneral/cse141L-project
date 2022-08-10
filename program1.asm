@@ -24,7 +24,7 @@ init: LDI #d62
 	PUT r8 // init r8 decrementer with number of preamble space chars
 	LDI #d64
 	PUT r9 // init r9 decrementer to total number of possible ciphertext chars
-preamble_loop:LDI #d32 // get space character decimal 32
+preamble_loop: LDI #d32 // get space character decimal 32
 	XOR r7 // bitwise XOR the current state with plaintext space to generate ciphertext
 	CLB r0 // clear the leading bit of the ciphertext as in requirements
 	STW r12 // store ciphertext to write pointer
