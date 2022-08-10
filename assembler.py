@@ -62,7 +62,8 @@ op_codes = {
 	'JNZ': 0b0_1110_0000,
 	'JEZ': 0b0_1110_1000,
 	'JMP': 0b0_1111_0000,
-	'JAL': 0b0_1111_1000
+	'JAL': 0b0_1111_1000,
+	'NOP': 0b0_1000_0000
 }
 
 def get_reg(type, opcode):
@@ -94,6 +95,7 @@ def get_immediate(operand, labels):
 
 output = sys.argv[1]
 targets = sys.argv[2:]
+out = open(output, "wb")
 print('detected targets: ' + str(targets))
 for file in targets:
 	print('assembing: ' + file)
@@ -127,10 +129,10 @@ for file in targets:
 		else:
 			operand = get_reg(op_type[opcode], operand)
 		instructions.append((opcode, operand))
-		#print(str(index+1) + " " + str(opcode) + " " + str(operand))
 		index += 1
-	out = open(output, "wb")
-	for inst in tqdm(instructions, desc='Assembly', unit=' instructions'): 
+	for i in tqdm(range(len(instructions), 256), desc='Paging', unit='instructions'):
+		instructions.append(("NOP", 0b0_0000_0000)) # append many NOPs to fill up the 256 instruction program block
+	for inst in tqdm(instructions, desc='Assembly', unit=' instructions'):
 		opcode = op_codes[inst[0]]
 		operand = inst[1]
 		out.write((opcode| operand).to_bytes(length=2, byteorder='big'))

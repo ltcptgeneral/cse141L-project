@@ -111,3 +111,5 @@ lfsr_routine: GET r7 // get previous state
 	JMP r0 // return to function call address
 done: LDI #b10000000 // load the processor flag state needed to halt the program
 	PUT r15 // put and set the done flag to 1 to halt the PC and indicate the program has finished
+	LDI #d255
+	JMP r0
