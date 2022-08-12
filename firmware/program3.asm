@@ -1,4 +1,4 @@
-// Program 2 register use map:
+// Program 3 register use map:
 // r0 is the accumulator, r1 and r2 is often used to cache temp values
 // r5 is the TAP LUT link register
 // r6 is LFSR tap pattern
