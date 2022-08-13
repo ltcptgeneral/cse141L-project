@@ -1,55 +1,46 @@
-// Create Date:    2018.10.15
-// Module Name:    ALU 
+// Module Name:    ALU
 // Project Name:   CSE141L
 //
-// Revision 2022.04.30
-// Additional Comments: 
+// Additional Comments:
 //   combinational (unclocked) ALU
-import definitions::*;			    // includes package "definitions"
+
+// includes package "Definitions"
+// be sure to adjust "Definitions" to match your final set of ALU opcodes
+import Definitions::*;
+
 module ALU #(parameter W=8)(
-  input        [W-1:0] InputA,      // data inputs
-                       InputB,
-  input                SC_in,       // shift or carry in
-  input        [  2:0] OP,		    // ALU opcode, part of microcode
-  output logic [W-1:0] Out,		    // or:  output reg [7:0] OUT,
-  output logic         PF,          // reduction parity
-  output logic         Zero,        // output = zero flag
-  output logic         SC_out       // shift or carry out
-// you may provide additional status flags as inputs, if desired
-    );								    
-	 
-  op_mne op_mnemonic;			         // type enum: used for convenient waveform viewing
+  input        [W-1:0]   InputA,       // data inputs
+                         InputB,
+  input        op_mne    OP,           // ALU opcode, part of microcode
+  input                  SC_in,        // shift or carry in
+  output logic [W-1:0]   Out,          // data output
+  output logic           Zero,         // output = zero flag    !(Out)
+                         Parity,       // outparity flag        ^(Out)
+                         Odd,          // output odd flag        (Out[0])
+						 SC_out        // shift or carry out
+  // you may provide additional status flags, if desired
+  // comment out or delete any you don't need
+);
 
-// InputA = current LFSR state
-// InputB = tap_pattern	
-  always_comb begin
-    Out = 0; 
-    SC_out = 0;                           // No Op = default
-    case(OP)
-      kADD : {SC_out,Out} = {1'b0,InputA} + InputB;      // add 
-      kLSH : {SC_out,Out} = {InputA[7:0],SC_in};  // shift left, fill in with SC_in 
-           // for logical left shift, tie SC_in = 0
- 	  kRSH : {Out,SC_out} = {SC_in, InputA[7:0]};  // shift right
- 	  kXOR : Out = InputA ^ InputB;      // exclusive OR
-      kAND : Out = InputA & InputB;      // bitwise AND
-    endcase
-  end
+always_comb begin
+// No Op = default
+// add desired ALU ops, delete or comment out any you don't need
+  Out = 8'b0;				                        // don't need NOOP? Out = 8'bx
+  SC_out = 1'b0;		 							// 	 will flag any illegal opcodes
+  case(OP)
+    ADD : {SC_out,Out} = InputA + InputB + SC_in;   // unsigned add with carry-in and carry-out
+    LSH : {SC_out,Out} = {InputA[7:0],SC_in};       // shift left, fill in with SC_in, fill SC_out with InputA[7]
+// for logical left shift, tie SC_in = 0
+    RSH : {Out,SC_out} = {SC_in, InputA[7:0]};      // shift right
+    XOR : Out = InputA ^ InputB;                    // bitwise exclusive OR
+    AND : Out = InputA & InputB;                    // bitwise AND
+    SUB : {SC_out,Out} = InputA + (~InputB) + 1;	// InputA - InputB;
+    CLR : {SC_out,Out} = 'b0;
+  endcase
+end
 
-  always_comb							  // assign Zero = !Out;
-    case(Out)
-      'b0     : Zero = 1'b1;
-	  default : Zero = 1'b0;
-    endcase
-
-  always_comb
-    PF = ^Out;  // Out[7]^Out[6]^...^Out[0]           // reduction XOR 
-
-  always_comb
-    op_mnemonic = op_mne'(OP);			 // displays operation name in waveform viewer
+assign Zero   = ~|Out;                  // reduction NOR	 Zero = !Out; 
+assign Parity = ^Out;                   // reduction XOR
+assign Odd    = Out[0];                 // odd/even -- just the value of the LSB
 
 endmodule
-
-
-				  /*     InputA=10101010    SC_in = 1
-               kLSH   Out = 01010101        
-*/

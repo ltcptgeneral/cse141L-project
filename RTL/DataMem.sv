@@ -1,39 +1,50 @@
 // Create Date:    2017.01.25
-// Revision:       2022.05.04  made data width parametric
-// Design Name:
+// Design Name:    CSE141L
 // Module Name:    DataMem
-// single address pointer for both read and write
-// CSE141L
-module DataMem #(parameter W=8, D=8)(
-  input               Clk,
-                      Reset,	   // again, note use of Reset for preloads
-                      WriteEn,
-  input       [D-1:0] DataAddress, // 8-bit-wide pointer to 256-deep memory
-  input       [W-1:0] DataIn,	   // 8-bit-wide data path, also
-  output logic[W-1:0] DataOut);
+// Last Update:    2022.01.13
 
-  logic [W-1:0] Core[2**D];		   // 8x256 two-dimensional array -- the memory itself
+// Memory can only read (LDR) or write (STR) on each Clk cycle, so there is a single
+// address pointer for both read and write operations.
+//
+// Parameters:
+//  - A: Address Width. This controls the number of entries in memory
+//  - W: Data Width. This controls the size of each entry in memory
+// This memory can hold `(2**A) * W` bits of data.
+//
+// WI22 is a 256-entry single-byte (8 bit) data memory.
+module DataMem #(parameter W=8, A=8) (				// do not change W=8
+  input                 Clk,
+                        Reset,		 // initialization
+                        WriteEn,	 // write enable
+  input       [A-1:0]   DataAddress, // A-bit-wide pointer to 256-deep memory
+  input       [W-1:0]   DataIn,      // W-bit-wide data path, also
+  output logic[W-1:0]   DataOut
+);
 
-  always_comb                      // reads are combinational
-    DataOut = Core[DataAddress];
+// 8x256 two-dimensional array -- the memory itself
+logic [W-1:0] core[2**A];
 
-/* optional way to plant constants into DataMem at startup
-    initial 
-      $readmemh("dataram_init.list", Core);
-*/
-  always_ff @ (posedge Clk)		   // writes are sequential
-/*( Reset response is needed only for initialization (see inital $readmemh above for another choice)
-  if you do not need to preload your data memory with any constants, you may omit the if(Reset) and the else,
-  and go straight to if(WriteEn) ...
-*/
-    if(Reset) begin
-// you may initialize your memory w/ constants, if you wish
-      for(int i=128;i<256;i++)
-	    Core[  i] <= 0;
-        Core[ 16] <= 254;          // overrides the 0  ***sample only***
-        Core[244] <= 5;			   //    likewise
-	end
-    else if(WriteEn) 
-      Core[DataAddress] <= DataIn;
+// reads are combinational
+always_comb
+  DataOut = core[DataAddress];
 
+// writes are sequential
+always_ff @ (posedge Clk)
+  /*
+  // Reset response is needed only for initialization.
+  // (see inital $readmemh above for another choice)
+  //
+  // If you do not need to preload your data memory with any constants,
+  // you may omit the `if (Reset) ... else` and go straight to `if(WriteEn)`
+  */
+
+  if(Reset) begin
+    // Preload desired constants into data_mem[128:255]
+    core[128] <= 'b1;
+  	core[129] <= 'hff;  
+    core[130] <= 'd64;
+  end 
+  else if(WriteEn)                    // store
+    // Do the actual writes
+    core[DataAddress] <= DataIn;
 endmodule

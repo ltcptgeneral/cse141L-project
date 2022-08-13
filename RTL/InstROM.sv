@@ -6,14 +6,18 @@
 // Description: Verilog module -- instruction ROM template	
 //	 preprogrammed with instruction values (see case statement)
 //
-// Revision: 2020.08.08
+// Revision: 2021.08.08
 //
+// A = program counter width
+// W = machine code width -- do not change for CSE141L
 module InstROM #(parameter A=12, W=9) (
   input       [A-1:0] InstAddress,
   output logic[W-1:0] InstOut);
 	 
 // (usually recommended) expression
 //   need $readmemh or $readmemb to initialize all of the elements
+// This version will work best with assemblers, but you can try the alternative starting line 33
+// This version is also by far the easiest if you have a long program scrip.  
 // declare 2-dimensional array, W bits wide, 2**A words deep
   logic[W-1:0] inst_rom[2**A];
   always_comb InstOut = inst_rom[InstAddress];
