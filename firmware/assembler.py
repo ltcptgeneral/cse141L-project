@@ -37,6 +37,7 @@ op_type = {
 	'PTY': 'G',
 	'CHK': 'A',
 	'XOR': 'A',
+	'DNE': 'N',
 	'JNZ': 'G',
 	'JEZ': 'G',
 	'JMP': 'G',
@@ -59,6 +60,7 @@ op_codes = {
 	'PTY': 0b0_1000_1000,
 	'CHK': 0b0_1001_0000,
 	'XOR': 0b0_1010_0000,
+	'DNE': 0b0_1011_1111, 
 	'JNZ': 0b0_1110_0000,
 	'JEZ': 0b0_1110_1000,
 	'JMP': 0b0_1111_0000,
@@ -73,6 +75,8 @@ def get_reg(type, opcode):
 		return reg_map[opcode]
 	elif type == 'A':
 		return reg_map[opcode]
+	elif type == 'N':
+		return 0
 	else:
 		print('invalid opcode detected: ' + opcode)
 		exit(1)
