@@ -1,46 +1,32 @@
-// Module Name:    ALU
-// Project Name:   CSE141L
-//
-// Additional Comments:
-//   combinational (unclocked) ALU
+// Module Name: ALU
+// Project Name: CSE141L
+// Description: combinational (unclocked) ALU
 
-// includes package "Definitions"
-// be sure to adjust "Definitions" to match your final set of ALU opcodes
 import Definitions::*;
 
 module ALU #(parameter W=8)(
-  input        [W-1:0]   InputA,       // data inputs
-                         InputB,
-  input        op_mne    OP,           // ALU opcode, part of microcode
-  input                  SC_in,        // shift or carry in
-  output logic [W-1:0]   Out,          // data output
-  output logic           Zero,         // output = zero flag    !(Out)
-                         Parity,       // outparity flag        ^(Out)
-                         Odd,          // output odd flag        (Out[0])
-						 SC_out        // shift or carry out
-  // you may provide additional status flags, if desired
-  // comment out or delete any you don't need
+	input [W-1:0] A, B, // data inputs
+	input op_mne ALU_OP, // ALU opcode, part of microcode
+	output logic [W-1:0] Out, // data output
+	output logic Zero // zero flag
 );
 
-always_comb begin
-// No Op = default
-// add desired ALU ops, delete or comment out any you don't need
-  Out = 8'b0;				                        // don't need NOOP? Out = 8'bx
-  SC_out = 1'b0;		 							// 	 will flag any illegal opcodes
-  case(OP)
-    ADD : {SC_out,Out} = InputA + InputB + SC_in;   // unsigned add with carry-in and carry-out
-    LSH : {SC_out,Out} = {InputA[7:0],SC_in};       // shift left, fill in with SC_in, fill SC_out with InputA[7]
-// for logical left shift, tie SC_in = 0
-    RSH : {Out,SC_out} = {SC_in, InputA[7:0]};      // shift right
-    XOR : Out = InputA ^ InputB;                    // bitwise exclusive OR
-    AND : Out = InputA & InputB;                    // bitwise AND
-    SUB : {SC_out,Out} = InputA + (~InputB) + 1;	// InputA - InputB;
-    CLR : {SC_out,Out} = 'b0;
-  endcase
-end
-
-assign Zero   = ~|Out;                  // reduction NOR	 Zero = !Out; 
-assign Parity = ^Out;                   // reduction XOR
-assign Odd    = Out[0];                 // odd/even -- just the value of the LSB
-
+	always_comb begin
+		case(ALU_OP)
+			NOP: Out = A; // pass A to out
+			INC: Out = A + 1; // imcrement A by 1
+			DEC: Out = A - 1; // decrement A by 1
+			CLB: Out = {1'b0, A[6:0]}; // set MSB of A to 0
+			ADD: Out = A + B; // add A to B
+			SUB: Out = A - B; // subtract B from A
+			ORR: Out = A | B; // bitwise OR between A and B
+			AND: Out = A & B; // bitwise AND between A and B
+			LSH: Out = A << B; // shift A by B bits
+			RXOR_7: Out = ^(A[6:0]); // perform reduction XOR of lower 7 bits of A
+			RXOR_8: Out = ^(A[7:0]); // perform reduction XOR of lower 8 bits of A
+			XOR: Out = A ^ B; // bitwise XOR between A and B
+			default: Out = 'bx; // flag illegal ALU_OP values
+		endcase
+		Zero = Out == 0;
+	end
 endmodule

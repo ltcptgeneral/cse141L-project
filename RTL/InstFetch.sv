@@ -1,37 +1,24 @@
-// Design Name:    basic_proc
-// Module Name:    InstFetch 
-// Project Name:   CSE141L
-// Description:    instruction fetch (pgm ctr) for processor
-//
-// Revision:  2021.11.27
-// Suggested ProgCtr width 10 t0 12 bits
-module InstFetch #(parameter T=10)(	  // PC width -- up to 32, if you like
-  input                Reset,		  // reset, init, etc. -- force PC to 0 
-                       Start,		  // begin next program in series (request issued by test bench)
-                       Clk,			  // PC can change on pos. edges only
-                       BranchAbs,	  // jump conditionally to Target value	   
-                       BranchRelEn,	  // jump conditionally to Target + PC
-                       ALU_flag,	  // flag from ALU, e.g. Zero, Carry, Overflow, Negative (from ARM)
-  input        [T-1:0] Target,	      // jump ... "how high?"
-  output logic [T-1:0] ProgCtr        // the program counter register itself
-  );
-	 
-// you may wish to use either absolute or relative branching
-//   you may use both, but you will need appropriate control bits
-// branch/jump is how we handle gosub and return to main
-// program counter can clear to 0, increment, or branch
-// for unconditional branching, "ALU_flag" input should be driven by 1
-  always_ff @(posedge Clk)	           // or just always; always_ff is a linting construct
-	if(Reset)
-	  ProgCtr <= 0;				       // for first program; want different value for 2nd or 3rd
-	else if(Start)					   // hold while start asserted; commence when released
-	  ProgCtr <= 0;                    //or <= ProgCtr;   holds at starting value
-	else if(BranchAbs && ALU_flag      // unconditional absolute jump
-	  ProgCtr <= Target;			   //   how would you make it conditional and/or relative?
-	else if(BranchRelEn && ALU_flag)   // conditional relative jump
-	  ProgCtr <= Target + ProgCtr;	   //   how would you make it unconditional and/or absolute
-	else
-	  ProgCtr <= ProgCtr+'b1; 	       // default increment (no need for ARM/MIPS +4 -- why?)
+// Module Name: ALU
+// Project Name: CSE141L
+// Description: instruction fetch (pgm ctr) for processor
+
+module InstFetch #(parameter T=10, parameter W=8)(	  // T is PC address size, W is the jump target pointer width, which is less
+	input logic Clk, Reset, // clock, reset
+	input logic BranchEZ, BranchNZ, BranchAlways, Zero, // branch control signals zero from alu signals; brnahc signals will be one hot encoding
+	input logic done // Done flag to indicate if the PC should increment at all
+	input logic [W-1:0] Target, // jump target pointer
+	output logic [T-1:0] ProgCtr_p4 // value of pc+4 for use in JAL instruction itself
+);
+
+	logic [T-1:0] PC;
+
+	always_ff @(posedge Clk) begin
+		if(Reset) PC <= 0; // if reset, set PC to 0
+		else if (BranchAlways) PC <= Target; // if unconditional branch, assign PC to target
+		else if (BranchEZ && Zero) PC <= Target; // if branch on zero and zero is true, then assign PC to target
+		else if (BranchNZ && !Zero) PC <= Target; // if branch on non zero and zero is false, then assign PC to parget
+		else if (!done) PC <= PC + 'b1; // if not a branch but CPU is not done, then 
+		else PC <= PC;
+	end
 
 endmodule
-
