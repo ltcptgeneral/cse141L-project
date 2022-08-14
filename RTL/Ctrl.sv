@@ -69,8 +69,8 @@ module Ctrl #(
 				write_mem = 'b1;
 			end
 			'b0_0011_0xxx: begin // NXT
-				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == d'10) ALU_OP = INC;
-				else if (S_operand == 'd11 || S_operand == 'd12 || S_operand == d'13) ALU_OP = DEC;
+				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == 'd10) ALU_OP = INC;
+				else if (S_operand == 'd11 || S_operand == 'd12 || S_operand == 'd13) ALU_OP = DEC;
 				else ALU_OP = NOP;
 				RaddrA = S_operand;
 				Waddr = S_operand;

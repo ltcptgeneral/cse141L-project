@@ -5,7 +5,7 @@
 module InstFetch #(parameter T=10, parameter W=8)(	  // T is PC address size, W is the jump target pointer width, which is less
 	input logic Clk, Reset, // clock, reset
 	input logic BranchEZ, BranchNZ, BranchAlways, Zero, // branch control signals zero from alu signals; brnahc signals will be one hot encoding
-	input logic done // Done flag to indicate if the PC should increment at all
+	input logic done, // Done flag to indicate if the PC should increment at all
 	input logic [W-1:0] Target, // jump target pointer
 	output logic [T-1:0] ProgCtr_p4 // value of pc+4 for use in JAL instruction itself
 );
