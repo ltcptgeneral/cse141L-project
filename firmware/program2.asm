@@ -59,7 +59,7 @@ tap_init: LDI #d64
 	NXT r9 // decrement total encryption chars remaining
 	tap_loop: LDI lfsr_routine
 		JAL r0 // jump to lfsr routine which calculates next state in r7
-		LDI #d32 // load space char expected plaintext
+		LDI #d0 // load space char expected plaintext
 		XOR r7
 		CLB r0 // clear leading bit in the expected ciphertext
 		PUT r1 // store expected cipher text in r1

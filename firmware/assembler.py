@@ -99,7 +99,8 @@ def get_immediate(operand, labels):
 
 output = sys.argv[1]
 targets = sys.argv[2:]
-out = open(output, "wb")
+#out = open(output, "wb")
+out = open(output, "w")
 print('detected targets: ' + str(targets))
 for file in targets:
 	print('assembing: ' + file)
@@ -139,4 +140,5 @@ for file in targets:
 	for inst in tqdm(instructions, desc='Assembly', unit=' instructions'):
 		opcode = op_codes[inst[0]]
 		operand = inst[1]
-		out.write((opcode| operand).to_bytes(length=2, byteorder='big'))
+		out.write(format(opcode | operand, 'b') + '\n')
+		#out.write((opcode| operand).to_bytes(length=2, byteorder='big'))

@@ -2,7 +2,7 @@
 // testbench for programmable message encryption (Program #1)
 // CSE141L    
 // runs program 1 (encrypt a message)
-module encrypt_tb ()        ;
+module program1_tb ()        ;
 // DUT interface -- four one-bit wires, three to DUT, one from
   bit        clk            ,          // advances simulation step-by-step
              init  = 1'b1   ,          // init (reset) command to DUT
@@ -46,7 +46,7 @@ module encrypt_tb ()        ;
   assign LFSR_ptrn[7] = 8'h7E;         // (0)111_1110
   assign LFSR_ptrn[8] = 8'h7B;
   always_comb begin
-    pt_no = 0;//$random;				   // or select a specific pattern ([0] and [1] are simplest to debug
+    pt_no = 8;//$random;				   // or select a specific pattern ([0] and [1] are simplest to debug
     if(pt_no>8) pt_no[3] = 0;	       // restrict pt_no to 0 through 8
     lfsr_ptrn = LFSR_ptrn[pt_no];      // look up and engage the selected pattern; to data_mem[62]
   end

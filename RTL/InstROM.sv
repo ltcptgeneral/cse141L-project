@@ -10,7 +10,7 @@
 //
 // A = program counter width
 // W = machine code width -- do not change for CSE141L
-module InstROM #(parameter A=12, W=9) (
+module InstROM #(parameter A=10, W=9) (
   input       [A-1:0] InstAddress,
   output logic[W-1:0] InstOut);
 	 

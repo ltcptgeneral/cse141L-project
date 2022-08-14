@@ -15,12 +15,13 @@ module top_level(
 	logic [8:0] Instruction;
 	logic [W-1:0] ALU_Out; 
 	logic [W-1:0] RegOutA, RegOutB; // select from register inputs or immediate inputs
-	logic [T-1:0] ProgCtr_p4;
+	logic [T-1:0] ProgCtr_p1;
 	logic [W-1:0] mem_out;
 	op_mne ALU_OP; // control ALU operation
 	logic [W-1:0] ALU_A, ALU_B;
 	logic RegWrite, Done_in;
-	logic [3:0] RaddrA, RaddrB, Waddr, RegInput;
+	logic [3:0] RaddrA, RaddrB, Waddr;
+	logic [W-1:0] RegInput;
 	logic BranchEZ, BranchNZ, BranchAlways;
 	logic write_mem;
 	logic Zero_in, Zero_out;
@@ -47,7 +48,7 @@ module top_level(
 		.Done(Done_out),
 		.Target(ALU_A),
 		.ProgCtr(ProgCtr),
-		.ProgCtr_p4(ProgCtr_p4)
+		.ProgCtr_p1(ProgCtr_p1)
 	);
 
 	RegFile regfile (
@@ -67,7 +68,7 @@ module top_level(
 		.Done_out(Done_out)
 	);
 
-	DataMem datamem (
+	DataMem DM (
 		.Clk(clk),
 		.Reset(init),
 		.WriteEn(write_mem),
