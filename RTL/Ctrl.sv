@@ -9,11 +9,11 @@ module Ctrl #(
 	parameter T = 10
 ) (
 	input logic [8:0] Instruction,
-	input logic [W-1:0] ALU_Out, // control ALU operation
+	input logic [W-1:0] ALU_Out,
 	input logic [W-1:0] RegOutA, RegOutB, // select from register inputs or immediate inputs
 	input logic [T-1:0] ProgCtr_p4,
 	input logic [W-1:0] mem_out,
-	output op_mne ALU_OP,
+	output op_mne ALU_OP, // control ALU operation
 	output logic [W-1:0] ALU_A, ALU_B,
 	output logic RegWrite, Done_in,
 	output logic [3:0] RaddrA, RaddrB, Waddr, RegInput,

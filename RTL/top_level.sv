@@ -1,35 +1,87 @@
-// skeletal starter code top level of your DUT
+// Module Name: ALU
+// Project Name: CSE141L
+// Description: top level RTL for processor
+
+import Definitions::*;
+
 module top_level(
-  input clk, init, req,
-  output logic ack);
+	input clk, init, req,
+	output logic ack
+);
 
-  logic mem_wen;
-  logic[7:0]  mem_addr,
-              mem_in,
-			  mem_out;
-  logic[11:0] pctr;		  // temporary program counter
+	parameter T=10;
+	parameter W=8;
 
-// populate with program counter, instruction ROM, reg_file (if used),
-//  accumulator (if used), 
+	logic [8:0] Instruction;
+	logic [W-1:0] ALU_Out; 
+	logic [W-1:0] RegOutA, RegOutB; // select from register inputs or immediate inputs
+	logic [T-1:0] ProgCtr_p4;
+	logic [W-1:0] mem_out;
+	op_mne ALU_OP; // control ALU operation
+	logic [W-1:0] ALU_A, ALU_B;
+	logic RegWrite, Done_in;
+	logic [3:0] RaddrA, RaddrB, Waddr, RegInput;
+	logic BranchEZ, BranchNZ, BranchAlways;
+	logic write_mem;
+	logic Zero_in, Zero_out;
+	logic Done_out;
+	logic [T-1:0] ProgCtr;
 
-DataMem DM(.Clk         (clk), 
-           .Reset       (init), 
-           .WriteEn     (mem_wen), 
-           .DataAddress (mem_addr), 
-           .DataIn      (mem_in), 
-           .DataOut     (mem_out));
+	Ctrl #() c (.*);
 
+	ALU #() a (
+		.A(ALU_A),
+		.B(ALU_B),
+		.ALU_OP(ALU_OP),
+		.Out(ALU_Out),
+		.Zero(Zero_in)
+	);
 
-// temporary circuit to provide ack (done) flag to test bench
-//   remove or greatly increase the match value once you get a 
-//   proper ack 
-always @(posedge clk) 
-  if(init || req) 
-    pctr <= 'h0;
-  else  
-	pctr <= pctr+'h1;
+	InstFetch #() pc (
+		.Clk(clk),
+		.Reset(init),
+		.BranchEZ(BranchEZ),
+		.BranchNZ(BranchNZ),
+		.BranchAlways(BranchAlways),
+		.Zero(Zero_out),
+		.Done(Done_out),
+		.Target(ALU_A),
+		.ProgCtr(ProgCtr),
+		.ProgCtr_p4(ProgCtr_p4)
+	);
 
-assign ack = pctr=='h256;  // pctr needed to trigger ack (arbitary time)
+	RegFile #() r (
+		.Clk(clk),
+		.Reset(init),
+		.WriteEn(RegWrite),
+		.RaddrA(RaddrA),
+		.RaddrB(RaddrB),
+		.Waddr(Waddr),
+		.DataIn(RegInput),
+		.Zero_in(Zero_in),
+		.Done_in(Done_in),
+		.start(req),
+		.DataOutA(RegOutA),
+		.DataOutB(RegOutB),
+		.Zero_out(Zero_out),
+		.Done_out(Done_out)
+	);
+
+	DataMem #() d (
+		.Clk(clk),
+		.Reset(init),
+		.WriteEn(write_mem),
+		.DataAddress(ALU_Out),
+		.DataIn(RegOutB),
+		.DataOut(mem_out)
+	);
+
+	InstROM #() i (
+		.InstAddress(ProgCtr),
+		.InstOut(Instruction)
+	);
+
+	assign ack = Done_out;
 
 endmodule
 
