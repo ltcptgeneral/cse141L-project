@@ -1,4 +1,4 @@
-// Module Name: ALU
+// Module Name: top_level
 // Project Name: CSE141L
 // Description: top level RTL for processor
 

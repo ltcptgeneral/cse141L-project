@@ -1,4 +1,4 @@
-// Module Name: ALU
+// Module Name: RegFile
 // Project Name: CSE141L
 // Description: register file
 

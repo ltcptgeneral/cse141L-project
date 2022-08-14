@@ -1,4 +1,4 @@
-// Module Name: ALU
+// Module Name: InstFetch
 // Project Name: CSE141L
 // Description: instruction fetch (pgm ctr) for processor
 

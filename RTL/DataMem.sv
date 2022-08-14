@@ -1,4 +1,4 @@
-// Module Name: ALU
+// Module Name: DataMem
 // Project Name: CSE141L
 // control decoder (combinational, not clocked)
 

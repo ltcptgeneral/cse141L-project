@@ -1,4 +1,4 @@
-// Module Name: ALU
+// Module Name: Definitions
 // Project Name: CSE141L
 // Description: contains enumerated ALU operations
 
