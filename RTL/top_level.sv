@@ -27,9 +27,9 @@ module top_level(
 	logic Done_out;
 	logic [T-1:0] ProgCtr;
 
-	Ctrl #() control (.*);
+	Ctrl control (.*);
 
-	ALU #() alu (
+	ALU alu (
 		.A(ALU_A),
 		.B(ALU_B),
 		.ALU_OP(ALU_OP),
@@ -37,7 +37,7 @@ module top_level(
 		.Zero(Zero_in)
 	);
 
-	InstFetch #() pc (
+	InstFetch pc (
 		.Clk(clk),
 		.Reset(init),
 		.BranchEZ(BranchEZ),
@@ -50,7 +50,7 @@ module top_level(
 		.ProgCtr_p4(ProgCtr_p4)
 	);
 
-	RegFile #() regfile (
+	RegFile regfile (
 		.Clk(clk),
 		.Reset(init),
 		.WriteEn(RegWrite),
@@ -67,7 +67,7 @@ module top_level(
 		.Done_out(Done_out)
 	);
 
-	DataMem #() datamem (
+	DataMem datamem (
 		.Clk(clk),
 		.Reset(init),
 		.WriteEn(write_mem),
@@ -76,7 +76,7 @@ module top_level(
 		.DataOut(mem_out)
 	);
 
-	InstROM #() rom (
+	InstROM rom (
 		.InstAddress(ProgCtr),
 		.InstOut(Instruction)
 	);

@@ -30,8 +30,8 @@ module Ctrl #(
 	assign I_Immediate = Instruction[7:0];
 	assign T_Immediate = Instruction[2:0];
 	assign A_operand = Instruction[3:0];
-	assign S_operand = {'b1, Instruction[2:0]};
-	assign G_operand = {'b0, Instruction[2:0]};
+	assign S_operand = {1'b1, Instruction[2:0]};
+	assign G_operand = {1'b0, Instruction[2:0]};
 
 	assign ALU_B = RegOutB;
 
