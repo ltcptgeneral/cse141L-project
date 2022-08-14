@@ -26,6 +26,8 @@ module RegFile #(parameter W=8, D=4)(		 // W = data path width (leave at 8); D =
 			for(int i=0; i<2**D; i++) begin
 				Registers[i] <= 'h0;
 			end
+			Zero <= 0;
+			Done <= 1; // default Done to halt machine
 		end
 		else if (WriteEn) begin
 			Registers[Waddr] <= DataIn;

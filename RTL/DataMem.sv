@@ -1,17 +1,7 @@
-// Create Date:    2017.01.25
-// Design Name:    CSE141L
-// Module Name:    DataMem
-// Last Update:    2022.01.13
+// Module Name: ALU
+// Project Name: CSE141L
+// control decoder (combinational, not clocked)
 
-// Memory can only read (LDR) or write (STR) on each Clk cycle, so there is a single
-// address pointer for both read and write operations.
-//
-// Parameters:
-//  - A: Address Width. This controls the number of entries in memory
-//  - W: Data Width. This controls the size of each entry in memory
-// This memory can hold `(2**A) * W` bits of data.
-//
-// WI22 is a 256-entry single-byte (8 bit) data memory.
 module DataMem #(parameter W=8, A=8) (				// do not change W=8
   input                 Clk,
                         Reset,		 // initialization
@@ -40,9 +30,9 @@ always_ff @ (posedge Clk)
 
   if(Reset) begin
     // Preload desired constants into data_mem[128:255]
-    core[128] <= 'b1;
-  	core[129] <= 'hff;  
-    core[130] <= 'd64;
+    //core[128] <= 'b1;
+  	//core[129] <= 'hff;  
+    //core[130] <= 'd64;
   end 
   else if(WriteEn)                    // store
     // Do the actual writes
