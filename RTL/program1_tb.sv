@@ -24,7 +24,7 @@ module program1_tb ();
 	// note in practice your design should be able to handle ANY ASCII string that is
 	// restricted to characters between space (0x20) and script f (0x9f) and shorter than 
 	// 55 characters in length
-	string str1  = "Mr. Watson, come here. I want to see you.";
+	string str1 = "Mr. Watson, come here. I want to see you.";
 
 	// displayed encrypted string will go here:
 	string str_enc1[64]; // program 1 desired output will go here
@@ -72,7 +72,6 @@ module program1_tb ();
 
   	initial begin
 		file_no = 'b1;
-		//file_no = $fopen("msg_enocder_out.txt","w");
 		#0ns strlen = str1.len;             // length of string 1 (# characters between " ")
 		if(strlen>54) strlen = 54;          // clip message at 54 characters
 		// program 1 -- precompute encrypted message
@@ -132,9 +131,10 @@ module program1_tb ();
         		$fdisplay(file_no,"%d bench msg: %s %h dut msg: %h", n, msg_crypto1[n][6:0]+8'h20, msg_crypto1[n], dut.DM.core[n+64]);
 				score++;
 	  		end
-      		else
+      		else begin
        			$fdisplay(file_no,"%d bench msg: %s %h dut msg: %h  OOPS!", n, msg_crypto1[n][6:0]+8'h20, msg_crypto1[n], dut.DM.core[n+64]);
-    	end
+			end
+		end
 
 		$fdisplay(file_no,"score = %d/64",score);
 		#20ns $fclose(file_no);
