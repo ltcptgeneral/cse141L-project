@@ -1,5 +1,5 @@
-// Program 3 register use map:
-// r0 is the accumulator, r1 and r2 is often used to cache temp values
+// Program 2 register use map:
+// r0 is the accumulator, r1 is often used to cache temp values
 // r5 is the TAP LUT link register
 // r6 is LFSR tap pattern
 // r7 is LFSR state value
@@ -34,20 +34,20 @@ tap_init: LDI #d64
 	PUT r11 // set read pointer to 64
 	LDI #d0 
 	PUT r12 // set write pointer to 0
-	LDI #d10
-	PUT r8 // load 10 into preamble counter
+	LDI #d9
+	PUT r8 // load 9 into preamble counter
 	LDI #d64
 	PUT r9 // load 64 (total encryption length) to r9
 	LDI done
 	NXT r10 // decrement tap selection by 1, starts at 9 for the first iteration
 	JEZ r0 // if no more taps left that didn't work, raise the done flag
-	LDI tap_init
+	LDI lut_return
 	PUT r5 // put the tap_loop address in r5
 	LDI tap_lut
 	ADD r10
 	ADD r10 // add 2*tap select to tap_lut location, results in location of selected tap pattern
 	JMP r0 // jump to LUT, which loads the tap pattern into r0
-	PUT r6 // tap pattern now in r6
+	lut_return: PUT r6 // tap pattern now in r6
 	LDW r11 // get the first preamble character
 	PUT r1 // put cipher text into r1
 	LDI #d32 // load expected space character
@@ -59,13 +59,14 @@ tap_init: LDI #d64
 	NXT r9 // decrement total encryption chars remaining
 	tap_loop: LDI lfsr_routine
 		JAL r0 // jump to lfsr routine which calculates next state in r7
-		LDI #d0 // load space char expected plaintext
+		LDI #d32 // load space char expected plaintext
 		XOR r7
 		CLB r0 // clear leading bit in the expected ciphertext
 		PUT r1 // store expected cipher text in r1
 		LDI tap_init 
 		PUT r2 // load the outer loop top into r2
 		LDW r11 // load actual ciphertext
+		CLB r0 // clear leading bit for r0 since we do not expect any errors for this program
 		SUB r1 // subtract actual from expected, result of 0 means matching
 		JNZ r2 // jump to outer loop (picks new tap pattern) if the actual cipher was not equal to the expected
 		LDI #d32 // load preamble char
@@ -78,21 +79,22 @@ tap_init: LDI #d64
 		JEZ r0 // if r8 (preamble counter) is zero, then all preamble have matched and current tap pattern is correct, jump to main loop
 		LDI tap_loop
 		JMP r0 // jump to tap_loop if characters matched but preamble is not over
-main_loop: LDI correct
+main_loop: LDI lfsr_routine // load address for the lfsr_routine label
+	JAL r0 // jump to the lfsr_routine label
+	LDI correct
 	PUT r1 // put correct handle address in r1
 	LDW r11 // load the next ciphertext byte
 	CHK r0 // check ciphertext for error
-	JEZ r1 // if no error, jump to correct, otherwise continue to error handling
+	JEZ r1 // if no error goto correct handler, otherwise continue to error handler
 	error: LDI #x80 // load error flag character into r0
 	STW r12 // store error flag to write pointer
 	LDI common
 	JMP r0 // jump out of error handling, to common operations after writing
-	correct: XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
+	correct: CLB r0 // clear leading bit because we do not expect errors
+	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
 	CLB r0 // clear the leading bit of the plaintext as in requirements
 	STW r12 // store plaintext to write pointer
-	common: LDI lfsr_routine // load address for the lfsr_routine label
-	JAL r0 // jump to the lfsr_routine label
-	NXT r11 // increment read pointer
+	common: NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
 	LDI done // load address of label done
 	NXT r9 // decrement number of remaining plaintext chars

@@ -82,7 +82,6 @@ tap_init: LDI #d64
 main_loop: LDI lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	LDW r11 // load the next ciphertext byte
-	CLB r0 // clear leading bit because we do not expect errors
 	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
 	CLB r0 // clear the leading bit of the plaintext as in requirements
 	STW r12 // store plaintext to write pointer
