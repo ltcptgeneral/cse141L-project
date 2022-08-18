@@ -22,8 +22,8 @@ module program2_tb ()        ;
 // note in practice your design should be able to handle ANY ASCII string that is
 //  restricted to characters between space (0x20) and script f (0x9f) and shorter than 
 //  55 characters in length
-  string     str1  = "Mr. Watson, come here. I want to see you.";     // sample program 1 input
-//  string     str1  = " Knowledge comes, but wisdom lingers.    ";   // alternative inputs
+  string     str1  = "Knowledge comes, but wisdom lingers";     // sample program 1 input
+//  string     str1  = " .    ";   // alternative inputs
 //  string     str1  = "  01234546789abcdefghijklmnopqrstuvwxyz. ";   //   (make up your own,
 //  string     str1  = "  f       A joke is a very serious thing.";   // 	as well)
 //  string     str1  = "                           Ajok          ";   // 
@@ -46,13 +46,14 @@ module program2_tb ()        ;
   assign LFSR_ptrn[7] = 7'h7E;
   assign LFSR_ptrn[8] = 7'h7B;
   always_comb begin
-    pt_no = 0; //$random>>22;       // or pick a specific one
-    if(pt_no>8) pt_no[3] = 0;	    // restrict to 0 through 8 (our legal patterns)
-    lfsr_ptrn = LFSR_ptrn[pt_no];   // engage the selected pattern
-  end
+    pt_no = 4;
+		//pt_no = $urandom_range(0, 8);
+		if(pt_no>8) pt_no[3] = 0; // restrict pt_no to 0 through 8
+		lfsr_ptrn = LFSR_ptrn[pt_no]; // look up and engage the selected pattern; to data_mem[62]
+	end
 // now select a starting LFSR state -- any nonzero value will do
   always_comb begin					   
-    LFSR_init = 'b1;//$random>>2;          // or set a value, such as 7'b1, for debug
+    LFSR_init = $urandom;//$random>>2;          // or set a value, such as 7'b1, for debug
     if(!LFSR_init) LFSR_init = 7'b1; // prevents illegal starting state = 7'b0; 
   end
 

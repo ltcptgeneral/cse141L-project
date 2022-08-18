@@ -44,7 +44,7 @@ module program1_tb ();
 	assign LFSR_ptrn[8] = 8'h7B;
 
 	always_comb begin
-		pt_no = $random;
+		pt_no = $urandom_range(0, 8);
 		if(pt_no>8) pt_no[3] = 0; // restrict pt_no to 0 through 8
 		lfsr_ptrn = LFSR_ptrn[pt_no]; // look up and engage the selected pattern; to data_mem[62]
 	end
