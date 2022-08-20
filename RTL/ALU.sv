@@ -37,8 +37,7 @@ module ALU #(parameter W=8)(
 			end
 			AND: Out = A & B; // bitwise AND between A and B
 			LSH: Out = B << A; // shift B by A bits (limitation of control)
-			RXOR_7: Out = ^(A[6:0]); // perform reduction XOR of lower 7 bits of A
-			RXOR_8: Out = ^(A[7:0]); // perform reduction XOR of lower 8 bits of A
+			RXOR: Out = ^(A[7:0]); // perform reduction XOR of 8 bits of A
 			XOR: Out = A ^ B; // bitwise XOR between A and B
 			default: Out = 'bx; // flag illegal ALU_OP values
 		endcase

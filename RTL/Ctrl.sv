@@ -49,26 +49,26 @@ module Ctrl #(
 		BranchNZ = 'b0;
 		BranchAlways = 'b0;
 		write_mem = 'b0;
-		casez(Instruction[8:3])
-			'b1_????_?: begin // LDI
+		casez(Instruction[8:4])
+			'b1_????: begin // LDI
 				ALU_A = I_Immediate;
 			end
-			'b0_0000_?: begin // PUT
+			'b0_0000: begin // PUT
 				Waddr = A_operand;
 			end
-			'b0_0001_?: begin // GET
+			'b0_0001: begin // GET
 				RaddrA = A_operand;
 			end
-			'b0_0010_0: begin // LDW
+			'b0_0010: begin // LDW
 				RaddrA = S_operand;
 				RegInput = mem_out;
 			end
-			'b0_0010_1: begin // STW
+			'b0_0011: begin // STW
 				RaddrA = S_operand;
 				RegWrite = 'b0;
 				write_mem = 'b1;
 			end
-			'b0_0011_0: begin // NXT
+			'b0_0100: begin // NXT
 				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == 'd10) begin
 					ALU_OP = SUB;
 					ALU_B = 'b1;
@@ -81,54 +81,50 @@ module Ctrl #(
 				RaddrA = S_operand;
 				Waddr = S_operand;
 			end
-			'b0_0011_1: begin //CLB
+			'b0_0101: begin //CLB
 				ALU_OP = CLB;
 				RaddrA = G_operand;
 				Waddr = G_operand;
 			end
-			'b0_0100_?: begin // ADD
+			'b0_0110: begin // ADD
 				ALU_OP = ADD;
 				RaddrA = A_operand;
 			end
-			'b0_0111_?: begin // AND
+			'b0_0111: begin // AND
 				ALU_OP = AND;
 				RaddrA = A_operand;
 			end
-			'b0_1000_0: begin // LSH
+			'b0_1000: begin // LSH
 				ALU_OP = LSH;
 				ALU_A = T_Immediate;
 			end
-			'b0_1000_1: begin // PTY
-				ALU_OP = RXOR_7;
-				RaddrA = G_operand;
-			end
-			'b0_1001_?: begin // CHK
-				ALU_OP = RXOR_8;
+			'b0_1001: begin // RXR
+				ALU_OP = RXOR;
 				RaddrA = A_operand;
 			end
-			'b0_1010_?: begin // XOR
+			'b0_1010: begin // XOR
 				ALU_OP = XOR;
 				RaddrA = A_operand;
 			end
-			'b0_1011_?: begin // DNE
+			'b0_1011: begin // DNE
 				Done_in = 'b1;
 			end
-			'b0_1110_0: begin // JNZ
+			'b0_1100: begin // JNZ
 				RegWrite = 'b0;
 				RaddrA = G_operand;
 				BranchNZ = 'b1;
 			end
-			'b0_1110_1: begin // JEZ
+			'b0_1101: begin // JEZ
 				RegWrite = 'b0;
 				RaddrA = G_operand;
 				BranchEZ = 'b1;
 			end
-			'b0_1111_0: begin // JMP
+			'b0_1110: begin // JMP
 				RegWrite = 'b0;
 				RaddrA = G_operand;
 				BranchAlways = 'b1;
 			end
-			'b0_1111_1: begin // JAL
+			'b0_1111: begin // JAL
 				RaddrA = G_operand;
 				Waddr = 'd14; // write to link register specifically
 				RegInput = ProgCtr_p1[7:0]; // write the value pc+4

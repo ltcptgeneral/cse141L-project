@@ -14,8 +14,7 @@ package Definitions;
 		ORR, // bitwise OR
 		AND, // bitwise AND
 		LSH, // left shift
-		RXOR_7, // reduction XOR with lower 7 bits
-		RXOR_8, // reduction XOR with lower 8 bits
+		RXOR, // reduction xor
 		XOR // bitwise XOR
 		} op_mne;
     

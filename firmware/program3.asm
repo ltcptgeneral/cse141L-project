@@ -90,7 +90,7 @@ finish_preamble: LDI lfsr_routine
 	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
 	LDI correct_pre
 	PUT r2 // put correct handler address in r2
-	CHK r1 // check r1 for errors
+	RXR r1 // check r1 for errors
 	JEZ r2
 	error_pre: LDI #x80
 		STW r12
@@ -106,7 +106,7 @@ main_loop: LDI lfsr_routine // load address for the lfsr_routine label
 	PUT r1 // store ciphertext in r1
 	LDI correct
 	PUT r2 // load address of correct handler in r2
-	CHK r1 // check r1(ciphertext) for errors
+	RXR r1 // check r1(ciphertext) for errors
 	JEZ r2 // if there are no errors, jump to correct handler, otherwise continue to error handler
 	error: LDI #x80
 		STW r12
@@ -135,7 +135,8 @@ finish_post: LDI #d32
 	JMP r0 // otherwise keep on padding spaces to the end
 lfsr_routine: GET r7 // get previous state
 	AND r6 // and state with taps to get feedback pattern
-	PTY r0 // get feedback parity bit
+	CLB r0
+	RXR r0 // get feedback parity bit
 	PUT r1 // store feedback bit to r1 temporarily
 	GET r7 // get previous state again
 	LSH #d1 // left shift previous state by 1

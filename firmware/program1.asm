@@ -52,7 +52,8 @@ main_loop: LDW r11 // load the next plaintext byte
 	JMP r0 // jump to main_loop if there is still space for message characters
 lfsr_routine: GET r7 // get previous state
 	AND r6 // and state with taps to get feedback pattern
-	PTY r0 // get feedback parity bit
+	CLB r0
+	RXR r0 // get feedback parity bit
 	PUT r1 // store feedback bit to r1 temporarily
 	GET r7 // get previous state again
 	LSH #d1 // left shift previous state by 1
