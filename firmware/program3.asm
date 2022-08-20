@@ -1,5 +1,5 @@
 // Program 2 register use map:
-// r0 is the accumulator, r1 is often used to cache temp values
+// r0 is the accumulator, r1 r2 r3 are often used to cache temp values
 // r5 is the TAP LUT link register
 // r6 is LFSR tap pattern
 // r7 is LFSR state value
@@ -51,11 +51,9 @@ tap_init: LDI #d64
 	LDW r11 // get the first preamble character
 	PUT r1 // put cipher text into r1
 	LDI #d32 // load expected space character
-	STW r12 // write initial space into memory
 	XOR r1 // get the initial state
 	PUT r7 // put initial state guess into r7
 	NXT r11 // increment read pointer
-	NXT r12 // increment write pointer
 	NXT r9 // decrement total encryption chars remaining
 	tap_loop: LDI lfsr_routine
 		JAL r0 // jump to lfsr routine which calculates next state in r7
@@ -69,38 +67,54 @@ tap_init: LDI #d64
 		CLB r0 // clear leading bit for r0 since we do not expect any errors for this program
 		SUB r1 // subtract actual from expected, result of 0 means matching
 		JNZ r2 // jump to outer loop (picks new tap pattern) if the actual cipher was not equal to the expected
-		LDI #d32 // load preamble char
-		STW r12 // store preamble char in memory
 		NXT r11 // increment read pointer
-		NXT r12 // increment write pointer
 		NXT r9 // decrement total encryption chars remaining
-		LDI main_loop // load main_loop location into r0
+		LDI finish_preamble // load main_loop location into r0
 		NXT r8 // decrement preamble counter
 		JEZ r0 // if r8 (preamble counter) is zero, then all preamble have matched and current tap pattern is correct, jump to main loop
 		LDI tap_loop
 		JMP r0 // jump to tap_loop if characters matched but preamble is not over
+finish_preamble: LDI lfsr_routine
+	JAL r0 // jump to lfsr routine which calculates next state in r7
+	LDW r11 // get next ciphertext
+	NXT r11 // increment read
+	NXT r9 // decrement remaining plaintext characters
+	PUT r3 // store clean copy of ciphertext for later use
+	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
+	CLB r0 // clear the leading bit of the plaintext as in requirements
+	PUT r1 // put the plaintext in r1
+	LDI finish_preamble
+	PUT r2 // load address of finish_preamble loop into r2
+	LDI #d32 // get value of space
+	SUB r1 // compare if r1 == 32
+	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
+	CLB r1 // clear leading bit of plaintext
+	GET r1 // get r1 to r0
+	STW r12 // store plaintext
+	NXT r12 // increment write only if we found the first non preamble char
 main_loop: LDI lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
-	LDI correct
-	PUT r1 // put correct handle address in r1
 	LDW r11 // load the next ciphertext byte
-	CHK r0 // check ciphertext for error
-	JEZ r1 // if no error goto correct handler, otherwise continue to error handler
-	error: LDI #x80 // load error flag character into r0
-	STW r12 // store error flag to write pointer
-	LDI common
-	JMP r0 // jump out of error handling, to common operations after writing
-	correct: CLB r0 // clear leading bit because we do not expect errors
 	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
 	CLB r0 // clear the leading bit of the plaintext as in requirements
 	STW r12 // store plaintext to write pointer
-	common: NXT r11 // increment read pointer
+	NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
-	LDI done // load address of label done
+	LDI finish_post // load address of label done
 	NXT r9 // decrement number of remaining plaintext chars
 	JEZ r0 // jump to end of program if all plaintext chars have been processed
 	LDI main_loop // load address of main_loop
 	JMP r0 // jump to main_loop if there is still space for message characters
+finish_post: LDI #d32
+	STW r12 // store extra spaces at the end to pad message
+	LDI done
+	PUT r1 // store done address in r1
+	LDI #d63
+	SUB r12 // subtract r12 from 63 to see if they are equal
+	JEZ r1 // if write pointer == 63, then we are done
+	NXT r12 // increment write pointer
+	LDI finish_post
+	JMP r0 // otherwise keep on padding spaces to the end
 lfsr_routine: GET r7 // get previous state
 	AND r6 // and state with taps to get feedback pattern
 	PTY r0 // get feedback parity bit

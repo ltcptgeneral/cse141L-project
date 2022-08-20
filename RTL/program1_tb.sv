@@ -51,13 +51,13 @@ module program1_tb ();
 
 	// now select a starting LFSR state -- any nonzero value will do
 	always_comb begin					   
-		LFSR_init = $random;
+		LFSR_init = $urandom;
 		if(!LFSR_init) LFSR_init = 7'b1; // prevents illegal starting state = 7'b0; 
 	end
 
 	// set preamble length for the program run (always > 9 but < 26)
 	always_comb begin
-		pre_length = $random;
+		pre_length = $urandom;
 		if(pre_length < 10) pre_length = 10; // prevents pre_length < 10
 		else if(pre_length > 26) pre_length = 26; // prevets pre_length > 26
 	end
