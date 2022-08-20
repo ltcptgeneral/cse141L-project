@@ -34,12 +34,11 @@ module Ctrl #(
 	assign S_operand = {1'b1, Instruction[2:0]};
 	assign G_operand = {1'b0, Instruction[2:0]};
 
-	assign ALU_B = RegOutB;
-
 	always_comb begin
 		// default values for an invalid NOP instruction, proper NOP instruction encoded as a LSH by 0
 		ALU_OP = NOP;
 		ALU_A = RegOutA;
+		ALU_B = RegOutB;
 		RegWrite = 'b1;
 		Done_in = 'b0;
 		RaddrA = 'b0;
@@ -70,8 +69,14 @@ module Ctrl #(
 				write_mem = 'b1;
 			end
 			'b0_0011_0: begin // N?T
-				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == 'd10) ALU_OP = DEC;
-				else if (S_operand == 'd11 || S_operand == 'd12 || S_operand == 'd13) ALU_OP = INC;
+				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == 'd10) begin
+					ALU_OP = SUB;
+					ALU_B = 'b1;
+				end
+				else if (S_operand == 'd11 || S_operand == 'd12 || S_operand == 'd13) begin
+					ALU_OP = ADD;
+					ALU_B = 'b1;
+				end
 				else ALU_OP = NOP;
 				RaddrA = S_operand;
 				Waddr = S_operand;

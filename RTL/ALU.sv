@@ -14,8 +14,6 @@ module ALU #(parameter W=8)(
 	always_comb begin
 		case(ALU_OP)
 			NOP: Out = A; // pass A to out
-			INC: Out = A + 1; // imcrement A by 1
-			DEC: Out = A - 1; // decrement A by 1
 			CLB: Out = {1'b0, A[6:0]}; // set MSB of A to 0
 			ADD: Out = A + B; // add A to B
 			SUB: Out = A - B; // subtract B from A
