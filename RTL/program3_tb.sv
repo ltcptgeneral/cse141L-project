@@ -126,7 +126,7 @@ module program3_tb ()        ;
       dut.DM.core[m+64] = msg_crypto1[m];
     for(int n=24; n<64; n++) begin	  	// load subsequent, possibly corrupt, encrypted message into data memory
 // set flipper = 8 or higher to disable bit corruption
-	  flipper = 8;//$random;                // value between 0 and 63, inclusive
+	  flipper = $random;//$random;                // value between 0 and 63, inclusive
       dut.DM.core[n+64] = msg_crypto1[n]^(1<<flipper);
       if(flipper<8) flipped[n]=1;
 	end

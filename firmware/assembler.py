@@ -119,6 +119,9 @@ for file in targets:
 			line = line.replace('\t', '') # remove leading tabs
 			line = line.replace('\n', '') # remove trailing newline
 			if ': ' in line:
+				if line.split(': ')[0] in labels:
+					print('dublicate label "' + line.split(': ')[0] + '" detected')
+					exit(1)
 				labels[line.split(': ')[0]] = index # ': ' must be used to end a label
 				no_comments.append(line.split(': ')[1])
 			else:

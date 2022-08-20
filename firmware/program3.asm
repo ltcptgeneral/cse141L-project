@@ -88,17 +88,35 @@ finish_preamble: LDI lfsr_routine
 	LDI #d32 // get value of space
 	SUB r1 // compare if r1 == 32
 	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
-	CLB r1 // clear leading bit of plaintext
-	GET r1 // get r1 to r0
-	STW r12 // store plaintext
-	NXT r12 // increment write only if we found the first non preamble char
+	LDI correct_pre
+	PUT r2 // put correct handler address in r2
+	CHK r1 // check r1 for errors
+	JEZ r2
+	error_pre: LDI #x80
+		STW r12
+		LDI common
+		JMP r0
+	correct_pre: CLB r1
+		GET r1
+		STW r12
+	common_pre: NXT r12 // increment write only if we found the first non preamble char
 main_loop: LDI lfsr_routine // load address for the lfsr_routine label
 	JAL r0 // jump to the lfsr_routine label
 	LDW r11 // load the next ciphertext byte
-	XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
-	CLB r0 // clear the leading bit of the plaintext as in requirements
-	STW r12 // store plaintext to write pointer
-	NXT r11 // increment read pointer
+	PUT r1 // store ciphertext in r1
+	LDI correct
+	PUT r2 // load address of correct handler in r2
+	CHK r1 // check r1(ciphertext) for errors
+	JEZ r2 // if there are no errors, jump to correct handler, otherwise continue to error handler
+	error: LDI #x80
+		STW r12
+		LDI common
+		JMP r0
+	correct: GET r1 // retrieve ciphertext from r1
+		XOR r7 // bitwise XOR the current state with ciphertext space to generate plaintext
+		CLB r0 // clear the leading bit of the plaintext as in requirements
+		STW r12 // store plaintext to write pointer
+	common: NXT r11 // increment read pointer
 	NXT r12 // increment write pointer
 	LDI finish_post // load address of label done
 	NXT r9 // decrement number of remaining plaintext chars
