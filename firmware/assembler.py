@@ -1,6 +1,10 @@
 from re import M
 import sys
-from tqdm import tqdm
+try:
+	from tqdm import tqdm
+except:
+	def tqdm(a, *args, **kwargs):
+		return a
 
 reg_map = {
 	'r0': 0,
