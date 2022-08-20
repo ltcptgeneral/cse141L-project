@@ -139,7 +139,7 @@ lfsr_routine: GET r7 // get previous state
 	PUT r1 // store feedback bit to r1 temporarily
 	GET r7 // get previous state again
 	LSH #d1 // left shift previous state by 1
-	ORR r1 // or with parity bit to get next state
+	XOR r1 // or with parity bit to get next state
 	PUT r7 // put next state to r7
 	GET r14 // load link register
 	JMP r0 // return to function call address

@@ -35,7 +35,6 @@ module ALU #(parameter W=8)(
 				CIN = 'b1;
 				Out = AdderResult[W-1:0]; 
 			end
-			ORR: Out = A | B; // bitwise OR between A and B
 			AND: Out = A & B; // bitwise AND between A and B
 			LSH: Out = B << A; // shift B by A bits (limitation of control)
 			RXOR_7: Out = ^(A[6:0]); // perform reduction XOR of lower 7 bits of A

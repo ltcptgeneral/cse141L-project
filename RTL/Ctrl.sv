@@ -90,10 +90,6 @@ module Ctrl #(
 				ALU_OP = ADD;
 				RaddrA = A_operand;
 			end
-			'b0_0110_?: begin // ORR
-				ALU_OP = ORR;
-				RaddrA = A_operand;
-			end
 			'b0_0111_?: begin // AND
 				ALU_OP = AND;
 				RaddrA = A_operand;
