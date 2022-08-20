@@ -70,7 +70,6 @@ module top_level(
 
 	DataMem DM (
 		.Clk(clk),
-		.Reset(init),
 		.WriteEn(write_mem),
 		.DataAddress(ALU_Out),
 		.DataIn(RegOutB),
