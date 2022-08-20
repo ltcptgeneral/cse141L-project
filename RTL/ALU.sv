@@ -11,12 +11,30 @@ module ALU #(parameter W=8)(
 	output logic Zero // zero flag
 );
 
+	logic [W-1:0] AdderA, AdderB;
+	logic CIN;
+	logic [W:0] AdderResult;
+
+	carry_lookahead_adder #(.N(W)) c (
+		.A(AdderA),
+		.B(AdderB),
+		.CIN(CIN),
+		.result(AdderResult)
+	);
+
 	always_comb begin
+		AdderA = A;
+		AdderB = B;
+		CIN = 'b0;
 		case(ALU_OP)
 			NOP: Out = A; // pass A to out
 			CLB: Out = {1'b0, A[6:0]}; // set MSB of A to 0
-			ADD: Out = A + B; // add A to B
-			SUB: Out = A - B; // subtract B from A
+			ADD: Out = AdderResult[W-1:0]; // add A to B
+			SUB: begin // subtract B from A
+				AdderB = ~B;
+				CIN = 'b1;
+				Out = AdderResult[W-1:0]; 
+			end
 			ORR: Out = A | B; // bitwise OR between A and B
 			AND: Out = A & B; // bitwise AND between A and B
 			LSH: Out = B << A; // shift B by A bits (limitation of control)
@@ -28,3 +46,36 @@ module ALU #(parameter W=8)(
 		Zero = Out == 0;
 	end
 endmodule
+
+module carry_lookahead_adder #(parameter N=16) (
+	input logic[N-1:0] A, B,
+	input logic CIN,
+	output logic[N:0] result
+);
+
+	logic[N-1:-1] carry;
+	logic[N-1:0] p, g;
+	genvar i;
+	generate
+		assign carry[-1] = CIN;
+		for(i = 0; i < N; i++) begin : fa_loop
+			fulladder f(.a(A[i]), .b(B[i]), .cin(carry[i-1]), .sum(result[i]), .cout());
+			assign g[i] = A[i] & B[i];
+			assign p[i] = A[i] | B[i];
+			assign carry[i] = g[i] | (p[i] & carry[i-1]);
+		end : fa_loop
+		assign result[N] = carry[N-1];
+	endgenerate
+  
+endmodule: carry_lookahead_adder
+
+module fulladder(
+	input logic a, b, cin, 
+	output logic sum, cout
+);
+	logic p, q;  
+	assign p = a ^ b;
+	assign q = a & b;
+	assign sum = p ^ cin;
+	assign cout = q | (p & cin);
+endmodule: fulladder
