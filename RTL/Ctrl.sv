@@ -68,7 +68,7 @@ module Ctrl #(
 				RegWrite = 'b0;
 				write_mem = 'b1;
 			end
-			'b0_0011_0: begin // N?T
+			'b0_0011_0: begin // NXT
 				if(S_operand == 'd8 || S_operand == 'd9 || S_operand == 'd10) begin
 					ALU_OP = SUB;
 					ALU_B = 'b1;
@@ -88,10 +88,6 @@ module Ctrl #(
 			end
 			'b0_0100_?: begin // ADD
 				ALU_OP = ADD;
-				RaddrA = A_operand;
-			end
-			'b0_0101_?: begin // SUB
-				ALU_OP = SUB;
 				RaddrA = A_operand;
 			end
 			'b0_0110_?: begin // ORR

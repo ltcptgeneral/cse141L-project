@@ -67,7 +67,7 @@ tap_init: LDI #d64
 		PUT r2 // load the outer loop top into r2
 		LDW r11 // load actual ciphertext
 		CLB r0 // clear leading bit for r0 since we do not expect any errors for this program
-		SUB r1 // subtract actual from expected, result of 0 means matching
+		XOR r1 // XOR actual from expected, result of 0 means matching
 		JNZ r2 // jump to outer loop (picks new tap pattern) if the actual cipher was not equal to the expected
 		LDI #d32 // load preamble char
 		STW r12 // store preamble char in memory

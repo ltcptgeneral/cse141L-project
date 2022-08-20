@@ -65,7 +65,7 @@ tap_init: LDI #d64
 		PUT r2 // load the outer loop top into r2
 		LDW r11 // load actual ciphertext
 		CLB r0 // clear leading bit for r0 since we do not expect any errors for this program
-		SUB r1 // subtract actual from expected, result of 0 means matching
+		XOR r1 // XOR actual from expected, result of 0 means matching
 		JNZ r2 // jump to outer loop (picks new tap pattern) if the actual cipher was not equal to the expected
 		NXT r11 // increment read pointer
 		NXT r9 // decrement total encryption chars remaining
@@ -86,7 +86,7 @@ finish_preamble: LDI lfsr_routine
 	LDI finish_preamble
 	PUT r2 // load address of finish_preamble loop into r2
 	LDI #d32 // get value of space
-	SUB r1 // compare if r1 == 32
+	XOR r1 // compare if r1 == 32
 	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
 	LDI correct_pre
 	PUT r2 // put correct handler address in r2
@@ -128,7 +128,7 @@ finish_post: LDI #d32
 	LDI done
 	PUT r1 // store done address in r1
 	LDI #d63
-	SUB r12 // subtract r12 from 63 to see if they are equal
+	XOR r12 // XOR r12 from 63 to see if they are equal
 	JEZ r1 // if write pointer == 63, then we are done
 	NXT r12 // increment write pointer
 	LDI finish_post
