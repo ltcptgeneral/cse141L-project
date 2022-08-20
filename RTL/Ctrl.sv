@@ -88,19 +88,19 @@ module Ctrl #(
 			end
 			'b0_0100_?: begin // ADD
 				ALU_OP = ADD;
-				RaddrB = A_operand;
+				RaddrA = A_operand;
 			end
 			'b0_0101_?: begin // SUB
 				ALU_OP = SUB;
-				RaddrB = A_operand;
+				RaddrA = A_operand;
 			end
 			'b0_0110_?: begin // ORR
 				ALU_OP = ORR;
-				RaddrB = A_operand;
+				RaddrA = A_operand;
 			end
 			'b0_0111_?: begin // AND
 				ALU_OP = AND;
-				RaddrB = A_operand;
+				RaddrA = A_operand;
 			end
 			'b0_1000_0: begin // LSH
 				ALU_OP = LSH;
@@ -116,7 +116,7 @@ module Ctrl #(
 			end
 			'b0_1010_?: begin // XOR
 				ALU_OP = XOR;
-				RaddrB = A_operand;
+				RaddrA = A_operand;
 			end
 			'b0_1011_?: begin // DNE
 				Done_in = 'b1;
