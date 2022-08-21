@@ -57,7 +57,7 @@ module program1_tb ();
 
 	// set preamble length for the program run (always > 9 but < 26)
 	always_comb begin
-		pre_length = $urandom;
+		pre_length = $urandom_range(10, 26);
 		if(pre_length < 10) pre_length = 10; // prevents pre_length < 10
 		else if(pre_length > 26) pre_length = 26; // prevets pre_length > 26
 	end
