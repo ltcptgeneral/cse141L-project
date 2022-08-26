@@ -59,13 +59,9 @@ module top_level(
 		.RaddrB(RaddrB),
 		.Waddr(Waddr),
 		.DataIn(RegInput),
-		.Zero_in(Zero_in),
-		.Done_in(Done_in),
 		.start(req),
 		.DataOutA(RegOutA),
-		.DataOutB(RegOutB),
-		.Zero_out(Zero_out),
-		.Done_out(Done_out)
+		.DataOutB(RegOutB)
 	);
 
 	DataMem DM (
@@ -79,6 +75,17 @@ module top_level(
 	InstROM rom (
 		.InstAddress(ProgCtr),
 		.InstOut(Instruction)
+	);
+
+	Flags f (
+		.Clk(clk),
+		.Reset(init),
+		.WriteEn(RegWrite),
+		.start(req),
+		.Zero_in(Zero_in),
+		.Zero_out(Zero_out),
+		.Done_in(Done_in),
+		.Done_out(Done_out)
 	);
 
 	assign ack = Done_out;
