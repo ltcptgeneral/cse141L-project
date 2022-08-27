@@ -2,7 +2,7 @@
 // testbench for programmable message decryption, space removal (Program #3)
 // CSE141L  
 // runs program 2 (decrypt a message), but with corruption
-module decrypt_depad_tb ()        ;
+module program3_tb ()        ;
 // DUT interface
   logic      clk   = 1'b0   ,      // advances simulation step-by-step
              init  = 1'b1   ,      // init (reset) command to DUT
