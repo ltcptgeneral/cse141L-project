@@ -24,11 +24,11 @@ module program3_tb ()        ;
 //  53 characters in length
 // *** No more than 24 leading space characters, including preamble. ***
 //    string     str1 = 
-//  string     str1  = "Mr. Watson, come here. I want to see you.";     // sample program 1 input
+  string     str1  = "        A joke is a very serious thing.";     // sample program 1 input
 //  string     str1  = " Knowledge comes, but wisdom lingers.    ";   // alternative inputs
 //  string     str1  = "  01234546789abcdefghijklmnopqrstuvwxyz. ";   //   (make up your own,
 //  string     str1  = "      A joke is a very serious thing.";   // 	as well)
-  string     str1  = "          Ajok          ";   // 
+//  string     str1  = "          Ajok          ";   // 
 //	string     str1  = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 //	string     str1  = "``@@```@@@````@@@@````@@@@@";
 //  string     str1  = " Knowledge comes, but wisdom lingers.    ";   // 
@@ -110,7 +110,7 @@ module program3_tb ()        ;
 //  testbench will change on falling clocks to avoid race conditions at rising clocks
     for (int i=0; i<64; i++) begin
       msg_crypto1[i]        = ((msg_padded1[i]-'h20) ^ lfsr1[i]);
-	  msg_crypto1[i][7]     = 0;//^msg_crypto1[i][6:0];       // prepend parity bit into MSB
+	  msg_crypto1[i][7]     = ^msg_crypto1[i][6:0];       // prepend parity bit into MSB
       $fdisplay(file_no,"i=%d, msg_pad=0x%h, lfsr=%b msg_crypt w/ parity = 0x%h",
          i,msg_padded1[i],lfsr1[i],msg_crypto1[i]);
 //for display purposes only, add 8'h20 to avoid nonprintable characters
@@ -135,7 +135,7 @@ module program3_tb ()        ;
       dut.DM.core[m+64] = msg_crypto1[m];
     for(int n=24; n<64; n++) begin	  	// load subsequent, possibly corrupt, encrypted message into data memory
 // set flipper = 8 or higher to disable bit corruption
-	  flipper = 8;//$random;                // value between 0 and 63, inclusive
+	  flipper = $random;//$random;                // value between 0 and 63, inclusive
       dut.DM.core[n+64] = msg_crypto1[n]^(1<<flipper);
       if(flipper<8) flipped[n]=1;
 	end

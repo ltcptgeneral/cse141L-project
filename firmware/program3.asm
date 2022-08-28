@@ -1,5 +1,5 @@
 // Program 2 register use map:
-// r0 is the accumulator, r1 r2 r3 are often used to cache temp values
+// r0 is the accumulator, r1 is often used to cache temp values
 // r5 is the TAP LUT link register
 // r6 is LFSR tap pattern
 // r7 is LFSR state value
@@ -50,14 +50,14 @@ tap_init: LDI #d64
 	lut_return: PUT r6 // tap pattern now in r6
 	LDW r11 // get the first preamble character
 	PUT r1 // put cipher text into r1
-	LDI #d32 // load expected space character
+	LDI #d0 // load expected space character
 	XOR r1 // get the initial state
 	PUT r7 // put initial state guess into r7
 	NXT r11 // increment read pointer
 	NXT r9 // decrement total encryption chars remaining
 	tap_loop: LDI lfsr_routine
 		JAL r0 // jump to lfsr routine which calculates next state in r7
-		LDI #d32 // load space char expected plaintext
+		LDI #d0 // load space char expected plaintext
 		XOR r7
 		CLB r0 // clear leading bit in the expected ciphertext
 		PUT r1 // store expected cipher text in r1
@@ -67,6 +67,7 @@ tap_init: LDI #d64
 		CLB r0 // clear leading bit for r0 since we do not expect any errors for this program
 		XOR r1 // XOR actual from expected, result of 0 means matching
 		JNZ r2 // jump to outer loop (picks new tap pattern) if the actual cipher was not equal to the expected
+		LDI #d0 // load preamble char
 		NXT r11 // increment read pointer
 		NXT r9 // decrement total encryption chars remaining
 		LDI finish_preamble // load main_loop location into r0
@@ -85,7 +86,7 @@ finish_preamble: LDI lfsr_routine
 	PUT r1 // put the plaintext in r1
 	LDI finish_preamble
 	PUT r2 // load address of finish_preamble loop into r2
-	LDI #d32 // get value of space
+	LDI #d0 // get value of space
 	XOR r1 // compare if r1 == 32
 	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
 	LDI correct_pre
@@ -94,7 +95,7 @@ finish_preamble: LDI lfsr_routine
 	JEZ r2
 	error_pre: LDI #x80
 		STW r12
-		LDI common
+		LDI common_pre
 		JMP r0
 	correct_pre: CLB r1
 		GET r1
