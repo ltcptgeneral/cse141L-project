@@ -91,7 +91,7 @@ finish_preamble: LDI lfsr_routine
 	JEZ r2 // jump to finish preamble loop if this plaintext == space(32)
 	LDI correct_pre
 	PUT r2 // put correct handler address in r2
-	RXR r1 // check r1 for errors
+	RXR r3 // check r1 for errors
 	JEZ r2
 	error_pre: LDI #x80
 		STW r12

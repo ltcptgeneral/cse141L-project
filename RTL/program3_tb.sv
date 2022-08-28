@@ -24,7 +24,7 @@ module program3_tb ()        ;
 //  53 characters in length
 // *** No more than 24 leading space characters, including preamble. ***
 //    string     str1 = 
-  string     str1  = "        A joke is a very serious thing.";     // sample program 1 input
+  string     str1  = "          four score and seven years ago...";     // sample program 1 input
 //  string     str1  = " Knowledge comes, but wisdom lingers.    ";   // alternative inputs
 //  string     str1  = "  01234546789abcdefghijklmnopqrstuvwxyz. ";   //   (make up your own,
 //  string     str1  = "      A joke is a very serious thing.";   // 	as well)
@@ -52,19 +52,19 @@ module program3_tb ()        ;
   assign LFSR_ptrn[7] = 7'h7E;
   assign LFSR_ptrn[8] = 7'h7B;
   always_comb begin
-    pt_no = 0; //$random>>22;      // or pick a specific one
+    pt_no = $urandom_range(0, 8); //$random>>22;      // or pick a specific one
     if(pt_no>8) pt_no[3] = 1'b0;    // restrict to 0 through 8 (our legal patterns)
     lfsr_ptrn = LFSR_ptrn[pt_no];  // engage the selected pattern
   end    
 // now select a starting LFSR state -- any nonzero value will do
   always_comb begin					   
-    LFSR_init = 7'b1;//$random>>2;          // or set a value, such as 7'b1, for debug
+    LFSR_init = $urandom;//$random>>2;          // or set a value, such as 7'b1, for debug
     if(!LFSR_init) LFSR_init = 7'b1; // prevents illegal starting state = 7'b0; 
   end
 
 // set preamble lengths for the program  (always > 9 but < 16)
   always_comb begin
-    pre_length = 10;//$random>>10 ;             // program 1 run
+    pre_length = $urandom_range(10, 15);//$random>>10 ;             // program 1 run
     if(pre_length < 10) pre_length = 10;   // prevents pre_length < 10
     if(pre_length > 15) pre_length = 15;
   end
