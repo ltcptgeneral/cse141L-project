@@ -63,7 +63,7 @@ module program1_tb ();
 	end
 
 	// ***** instantiate your own top level design here *****
-	top_level dut(
+	top_level #(.machine_code_file("machine_code_1.txt")) dut(
 		.clk(clk), // input: use your own port names, if different
 		.init(init), // input: some prefer to call this ".reset"
 		.req(start), // input: launch program

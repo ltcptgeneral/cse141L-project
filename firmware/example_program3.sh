@@ -1,2 +1,2 @@
 #!/bin/sh
-python assembler.py machine_code.txt program3.asm
+python assembler.py machine_code_3.txt program3.asm

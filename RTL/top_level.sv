@@ -4,7 +4,7 @@
 
 import Definitions::*;
 
-module top_level(
+module top_level #(parameter machine_code_file = "machine_code.txt") (
 	input clk, init, req,
 	output logic ack
 );
@@ -72,7 +72,7 @@ module top_level(
 		.DataOut(mem_out)
 	);
 
-	InstROM rom (
+	InstROM #(.machine_code_file(machine_code_file)) rom (
 		.InstAddress(ProgCtr),
 		.InstOut(Instruction)
 	);

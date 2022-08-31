@@ -2,7 +2,7 @@
 // Project Name: CSE141L
 // Description: instruction ROM module for use with InstFetch
 
-module InstROM #(parameter A=10, W=9) (
+module InstROM #(parameter A=10, W=9, machine_code_file = "machine_code.txt") (
 	input logic [A-1:0] InstAddress,
 	output logic[W-1:0] InstOut
 );
@@ -11,8 +11,9 @@ module InstROM #(parameter A=10, W=9) (
 	assign InstOut = inst_rom[InstAddress];
  
 	// use readmemb to read ascii 0 and 1 representation of binary values from text file
+
 	initial begin
-		$readmemb("machine_code.txt",inst_rom);
+		$readmemb(machine_code_file,inst_rom);
 	end
 
 endmodule

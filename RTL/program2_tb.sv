@@ -2,7 +2,7 @@
 // testbench for programmable message decryption (Program #2)
 // CSE141L  
 // runs program 2 (decrypt a message)
-module program2_tb ()        ;
+module program2_tb ();
 	// DUT interface -- four one-bit wires, three to DUT, one from
 	bit clk; // advances simulation step-by-step
 	bit init  = 1'b1; // init (reset) command to DUT
@@ -49,7 +49,7 @@ module program2_tb ()        ;
 	end
 
 	// now select a starting LFSR state -- any nonzero value will do
-	always_comb begin					   
+	always_comb begin
 		LFSR_init = $urandom;//$random>>2;          // or set a value, such as 7'b1, for debug
 		if(!LFSR_init) LFSR_init = 7'b1; // prevents illegal starting state = 7'b0; 
 	end
@@ -62,7 +62,7 @@ module program2_tb ()        ;
 	end
 
 	// ***** instantiate your own top level design here *****
-	top_level dut(
+	top_level #(.machine_code_file("machine_code_2.txt")) dut(
 		.clk(clk), // input: use your own port names, if different
 		.init(init), // input: some prefer to call this ".reset"
 		.req(start), // input: launch program
@@ -140,7 +140,7 @@ module program2_tb ()        ;
 		$fdisplay(file_no,"score = %d/64",score);
 		#20ns $fclose(file_no);
 		#20ns $stop;
-  end
+  	end
 
 	always begin     // continuous loop
 		#5ns clk = 1;  // clock tick
